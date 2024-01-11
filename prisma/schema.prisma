@@ -33,6 +33,7 @@ model Title {
   id       Int        @id @default(autoincrement())
   title    String
   Question Question[]
+  Student  Student[]
 }
 
 model Question {
@@ -44,9 +45,26 @@ model Question {
 }
 
 model Option {
-  id          Int      @id @default(autoincrement())
-  content     String
-  is_correct  Boolean
-  optionOwner Question @relation(fields: [questionId], references: [id])
-  questionId  Int
+  id            Int             @id @default(autoincrement())
+  content       String
+  is_correct    Boolean
+  optionOwner   Question        @relation(fields: [questionId], references: [id])
+  questionId    Int
+  StudentAnswer StudentAnswer[]
+}
+
+model Student {
+  id            Int             @id @default(autoincrement())
+  name          String
+  title         Title           @relation(fields: [titleId], references: [id])
+  titleId       Int
+  StudentAnswer StudentAnswer[]
+}
+
+model StudentAnswer {
+  id        Int     @id @default(autoincrement())
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+  answer    Option  @relation(fields: [optionId], references: [id])
+  optionId  Int
 }

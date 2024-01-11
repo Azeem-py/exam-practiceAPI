@@ -2,7 +2,13 @@ const express = require('express')
 const cors = require('cors')
 
 const { signup, login } = require('./controllers/auth')
-const { addQuestions } = require('./controllers/question')
+const {
+  addQuestions,
+  listQuestions,
+  getQuestionData,
+  answerQuestion,
+  questionAnswered,
+} = require('./controllers/question')
 
 // a middleware for validating jwt
 // const authenticateToken = require('./middlewares/authenticateToken')
@@ -18,5 +24,9 @@ authRouter.post('/login', login)
 app.use('/auth', authRouter)
 
 app.post('/add-question', addQuestions)
+app.get('/list-questions', listQuestions)
+app.get('/question-data/:questionID', getQuestionData)
+app.get('/answer-question/:questionID', answerQuestion)
+app.post('/question-submit', questionAnswered)
 
 app.listen(3000, () => console.log('listening at 3000'))
