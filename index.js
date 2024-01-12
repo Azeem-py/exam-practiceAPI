@@ -22,7 +22,7 @@ const allowedOrigins = [
   'https://127.0.0.1:5173',
 ]
 
-const corsOptions = { origin: allowedOrigins, Credential: true }
+const corsOptions = { origin: allowedOrigins }
 app.use(cors(corsOptions))
 app.use(express.json())
 const authRouter = express.Router()
