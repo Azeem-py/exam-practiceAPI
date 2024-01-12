@@ -11,7 +11,7 @@ const emailUnique = async (email) => {
     return false
   }
   try {
-    let user = await prisma.user.findUnique({ where: { email: email } })
+    let user = await prisma.user.findFirst({ where: { email: email } })
     if (user) return false
     return true
   } catch (err) {
@@ -54,11 +54,15 @@ const login = async (req, res) => {
   if (!email || !password)
     return res.status(400).send('Email and password field required!')
   try {
-    const User = await prisma.user.findUnique({
+    const User = await prisma.user.findFirst({
       where: { email: email },
-      select: { password: true, lastName: true, id: true },
+      select: { password: true, id: true },
     })
 
+    console.log('user', User)
+    if (!User) {
+      return res.status(400).json({ userError: 'User not found' })
+    }
     const id = User['id']
     const isMatch = await bcrypt.compare(password, User['password'])
     if (!isMatch)

@@ -11,6 +11,8 @@ const {
   studentResult,
 } = require('./controllers/question')
 
+const { authenticateToken } = require('./middlewares/authenticateToken')
+
 // a middleware for validating jwt
 // const authenticateToken = require('./middlewares/authenticateToken')
 
@@ -25,10 +27,10 @@ authRouter.post('/login', login)
 app.use('/auth', authRouter)
 
 app.post('/add-question', addQuestions)
-app.get('/list-questions', listQuestions)
-app.get('/question-data/:questionID', getQuestionData)
-app.get('/answer-question/:questionID', answerQuestion)
-app.post('/question-submit', questionAnswered)
-app.get('/students-results/:titleId', studentResult)
+app.get('/list-questions', authenticateToken, listQuestions)
+app.get('/question-data/:questionID', authenticateToken, getQuestionData)
+app.get('/answer-question/:questionID', authenticateToken, answerQuestion)
+app.post('/question-submit', authenticateToken, questionAnswered)
+app.get('/students-results/:titleId', authenticateToken, studentResult)
 
 app.listen(3000, () => console.log('listening at 3000'))

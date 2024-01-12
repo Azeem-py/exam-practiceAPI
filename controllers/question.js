@@ -41,9 +41,8 @@ const addQuestions = async (req, res) => {
 const listQuestions = async (req, res) => {
   try {
     const questions = await prisma.title.findMany({
-      include: { _count: { select: { Question: true } } },
+      include: { _count: { select: { Question: true, Student: true } } },
     })
-    console.log(questions)
     return res.json({ questions })
   } catch (e) {
     console.log(e.message)
