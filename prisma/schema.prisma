@@ -11,12 +11,10 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String
-  password  String
-  Token     Token[]
+  id       String  @id @default(uuid())
+  email    String
+  password String
+  Token    Token[]
 }
 
 model Token {
@@ -34,6 +32,8 @@ model Title {
   title    String
   Question Question[]
   Student  Student[]
+  // time given to submit
+  time     Int?
 }
 
 model Question {
@@ -59,6 +59,7 @@ model Student {
   title         Title           @relation(fields: [titleId], references: [id])
   titleId       Int
   StudentAnswer StudentAnswer[]
+  score         Int?
 }
 
 model StudentAnswer {

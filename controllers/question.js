@@ -1,14 +1,14 @@
 const { prisma } = require('../db')
 
 const addQuestions = async (req, res) => {
-  const { title, questions } = req.body
+  const { title, questions, time } = req.body
   if (!title) return res.status(400).json({ title: 'You need to add a title' })
   if (!questions)
     return res.status(400).json({ questions: 'You need to add questions' })
-  // const parsedQuestion = JSON.parse(questions)
-  // console.log(questions, typeof questions)
   try {
-    const newTitle = await prisma.title.create({ data: { title } })
+    const newTitle = await prisma.title.create({
+      data: { title, time: Number(time) },
+    })
     for (const question of questions) {
       const { content, options } = question
       const newQuestion = await prisma.question.create({
@@ -76,6 +76,7 @@ const answerQuestion = async (req, res) => {
       where: { id: Number(questionID) },
       select: {
         title: true,
+        time: true,
         Question: {
           select: {
             content: true,
@@ -98,49 +99,76 @@ const questionAnswered = async (req, res) => {
     return res.status(500).json({ 'invalid request': 'names answers required' })
 
   try {
+    let correctAnswers = 0
+
+    for (let answer of answers) {
+      const { is_correct } = await prisma.option.findUnique({
+        where: { id: answer },
+        select: { is_correct: true },
+      })
+      is_correct && correctAnswers++
+    }
+
     const newStudent = await prisma.student.create({
-      data: { name, title: { connect: { id: Number(title) } } },
+      data: {
+        name,
+        score: correctAnswers,
+        title: { connect: { id: Number(title) } },
+      },
     })
     for (let answer of answers) {
       await prisma.studentAnswer.create({
         data: {
           answer: { connect: { id: answer } },
-          student: { connect: { id: newStudent['id'] } },
+          student: {
+            connect: { id: newStudent['id'] },
+          },
         },
       })
     }
 
-    const totalQuestion = await prisma.question.count({
-      where: { titleId: Number(title) },
+    // might use this one later
+    // const newAnswers = await prisma.studentAnswer.createMany({
+    //   data: answers.map((answer) => {
+    //     return {
+    //       optionId: answer,
+    //       studentId: newStudent['id'],
+    //     }
+    //   }),
+    // })
+    // console.log('newAnswers', newAnswers)
+
+    const questions = await prisma.title.findUnique({
+      where: { id: Number(title) },
+      select: {
+        title: true,
+        Question: {
+          select: {
+            content: true,
+            Option: { select: { is_correct: true, id: true, content: true } },
+          },
+        },
+        _count: { select: { Question: true } },
+      },
     })
-    let correctAnswers = 0
-
-    const questionIdList = []
-    const correctAnswersIds = []
-    for (let answer of answers) {
-      const { is_correct, questionId } = await prisma.option.findUnique({
-        where: { id: answer },
-        select: { is_correct: true, questionId: true },
-      })
-      is_correct && correctAnswers++
-      questionIdList.push(questionId)
-
-      // this id is the id of the correct options related to the gotten questionId
-      const { id } = await prisma.option.findFirst({
-        where: { questionId, is_correct: true },
-        select: { id: true },
-      })
-      correctAnswersIds.push(id)
-    }
-
     return res.status(200).json({
       score: correctAnswers,
-      totalQuestion,
-      correctOptions: correctAnswersIds,
+      questions,
     })
   } catch (error) {
     console.log(error.message)
   }
+}
+
+const studentResult = async (req, res) => {
+  const { titleId } = req.params
+
+  const results = await prisma.student.findMany({
+    where: { titleId: Number(titleId) },
+    select: { name: true, score: true },
+  })
+  console.log(results)
+  return res.status(200).json({ results })
 }
 
 module.exports = {
@@ -149,4 +177,5 @@ module.exports = {
   getQuestionData,
   answerQuestion,
   questionAnswered,
+  studentResult,
 }

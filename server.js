@@ -8,6 +8,7 @@ const {
   getQuestionData,
   answerQuestion,
   questionAnswered,
+  studentResult,
 } = require('./controllers/question')
 
 // a middleware for validating jwt
@@ -28,5 +29,6 @@ app.get('/list-questions', listQuestions)
 app.get('/question-data/:questionID', getQuestionData)
 app.get('/answer-question/:questionID', answerQuestion)
 app.post('/question-submit', questionAnswered)
+app.get('/students-results/:titleId', studentResult)
 
 app.listen(3000, () => console.log('listening at 3000'))

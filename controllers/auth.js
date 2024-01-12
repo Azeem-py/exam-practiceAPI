@@ -20,9 +20,9 @@ const emailUnique = async (email) => {
 }
 
 const signup = async (req, res) => {
-  const { firstName, lastName, email, password, password2 } = req.body
-  if (!firstName && !lastName && !age && !email && !password && !password2)
-    return res.status(400).json({ error: 'all fieldss required' })
+  const { email, password, password2 } = req.body
+  if (!email && !password && !password2)
+    return res.status(400).json({ error: 'all fields required' })
   if (password !== password) return res.sendStatus(400)
 
   let isUnique = await emailUnique(email)
@@ -38,8 +38,6 @@ const signup = async (req, res) => {
   try {
     const newUser = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
         email,
         password: hashedPassword,
       },
@@ -60,23 +58,21 @@ const login = async (req, res) => {
       where: { email: email },
       select: { password: true, lastName: true, id: true },
     })
+
     const id = User['id']
-    // console.log(hashedPassword)
     const isMatch = await bcrypt.compare(password, User['password'])
     if (!isMatch)
       return res.status(403).json({ password: 'incorrect password' })
     const accessToken = generateAccessToken({ id })
     const refreshToken = generateRefreshToken({ id })
-    const token = await prisma.token.create({
+    await prisma.token.create({
       data: {
         user: { connect: { id } },
         refreshToken,
         accessToken,
       },
     })
-    // await token.save()
-    console.log(token)
-    return res.json({ accessToken, name: User['lastName'] })
+    return res.json({ accessToken })
   } catch (error) {
     console.log(error.message)
   }
