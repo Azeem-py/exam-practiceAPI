@@ -19,11 +19,12 @@ const { authenticateToken } = require('./middlewares/authenticateToken')
 const app = express()
 const allowedOrigins = [
   'https://exam-practice-jade.vercel.app/',
+  'https://exam-practice-jade.vercel.app',
   'http://127.0.0.1:5173',
 ]
 
 const corsOptions = { origin: allowedOrigins }
-app.use(cors({ ...corsOptions }))
+app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())
 const authRouter = express.Router()
 
