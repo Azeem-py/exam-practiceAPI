@@ -17,7 +17,13 @@ const { authenticateToken } = require('./middlewares/authenticateToken')
 // const authenticateToken = require('./middlewares/authenticateToken')
 
 const app = express()
-app.use(cors())
+const allowedOrigins = [
+  'https://exam-practice-api.vercel.app/',
+  'https://127.0.0.1:5173',
+]
+
+const corsOptions = { origin: allowedOrigins, Credential: true }
+app.use(cors(corsOptions))
 app.use(express.json())
 const authRouter = express.Router()
 
