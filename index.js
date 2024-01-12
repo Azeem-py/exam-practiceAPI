@@ -18,7 +18,7 @@ const { authenticateToken } = require('./middlewares/authenticateToken')
 
 const app = express()
 const allowedOrigins = [
-  'https://exam-practice-api.vercel.app/',
+  'https://exam-practice-jade.vercel.app',
   'https://127.0.0.1:5173',
 ]
 
