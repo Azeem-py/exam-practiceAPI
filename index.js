@@ -25,6 +25,11 @@ const allowedOrigins = [
 ]
 
 const corsOptions = { origin: allowedOrigins }
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  next()
+})
+
 app.use(cors())
 app.use(express.json())
 const authRouter = express.Router()
