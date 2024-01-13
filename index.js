@@ -40,7 +40,7 @@ app.use('/auth', authRouter)
 
 app.get('/hello', hello)
 app.post('/add-question', authenticateToken, addQuestions)
-app.get('/list-questions', listQuestions)
+app.get('/list-questions', authenticateToken, listQuestions)
 app.get('/question-data/:questionID', authenticateToken, getQuestionData)
 app.get('/answer-question/:questionID', answerQuestion)
 app.post('/question-submit', questionAnswered)
