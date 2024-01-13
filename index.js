@@ -34,7 +34,7 @@ authRouter.post('/login', login)
 
 app.use('/auth', authRouter)
 
-app.post('/hello', hello)
+app.get('/hello', hello)
 app.post('/add-question', authenticateToken, addQuestions)
 app.get('/list-questions', listQuestions)
 app.get('/question-data/:questionID', authenticateToken, getQuestionData)
