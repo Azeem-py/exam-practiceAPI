@@ -33,11 +33,11 @@ authRouter.post('/login', login)
 
 app.use('/auth', authRouter)
 
-app.post('/add-question', addQuestions)
-app.get('/list-questions', authenticateToken, listQuestions)
+app.post('/add-question', authenticateToken, addQuestions)
+app.get('/list-questions', listQuestions)
 app.get('/question-data/:questionID', authenticateToken, getQuestionData)
-app.get('/answer-question/:questionID', authenticateToken, answerQuestion)
-app.post('/question-submit', authenticateToken, questionAnswered)
+app.get('/answer-question/:questionID', answerQuestion)
+app.post('/question-submit', questionAnswered)
 app.get('/students-results/:titleId', authenticateToken, studentResult)
 
 app.listen(3000, () => console.log('listening at 3000'))
