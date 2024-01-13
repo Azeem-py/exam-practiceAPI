@@ -24,7 +24,7 @@ const allowedOrigins = [
 ]
 
 const corsOptions = { origin: allowedOrigins }
-app.use(cors({ origin: allowedOrigins }))
+app.use(cors())
 app.use(express.json())
 const authRouter = express.Router()
 
