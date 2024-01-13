@@ -6,21 +6,21 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = "mongodb+srv://webiniy:9t5U0VwzDKSn5z3S@exampract.mzgqksa.mongodb.net/ExamPractice"
+  provider = "postgresql"
+  url      = "postgresql://postgres:ForLoopWhileLoop@db.baftohmrdzwvziyjqxbb.supabase.co:5432/postgres"
 }
 
 model User {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  id       String  @id @default(uuid())
   email    String
   password String
   Token    Token[]
 }
 
 model Token {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(uuid())
   user         User     @relation(fields: [userId], references: [id])
-  userId       String   @db.ObjectId
+  userId       String
   accessToken  String
   refreshToken String
   createdAt    DateTime @default(now())
@@ -28,7 +28,7 @@ model Token {
 }
 
 model Title {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  id       Int        @id @default(autoincrement())
   title    String
   Question Question[]
   Student  Student[]
@@ -37,35 +37,35 @@ model Title {
 }
 
 model Question {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            Int      @id @default(autoincrement())
   content       String
   questionOwner Title    @relation(fields: [titleId], references: [id])
-  titleId       String   @db.ObjectId
+  titleId       Int
   Option        Option[]
 }
 
 model Option {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            Int             @id @default(autoincrement())
   content       String
   is_correct    Boolean
   optionOwner   Question        @relation(fields: [questionId], references: [id])
-  questionId    String          @db.ObjectId
+  questionId    Int
   StudentAnswer StudentAnswer[]
 }
 
 model Student {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            Int             @id @default(autoincrement())
   name          String
   title         Title           @relation(fields: [titleId], references: [id])
-  titleId       String          @db.ObjectId
+  titleId       Int
   StudentAnswer StudentAnswer[]
   score         Int?
 }
 
 model StudentAnswer {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        Int     @id @default(autoincrement())
   student   Student @relation(fields: [studentId], references: [id])
-  studentId String  @db.ObjectId
+  studentId Int
   answer    Option  @relation(fields: [optionId], references: [id])
-  optionId  String  @db.ObjectId
+  optionId  Int
 }
