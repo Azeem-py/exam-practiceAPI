@@ -9,6 +9,7 @@ const {
   answerQuestion,
   questionAnswered,
   studentResult,
+  hello,
 } = require('./controllers/question')
 
 const { authenticateToken } = require('./middlewares/authenticateToken')
@@ -33,6 +34,7 @@ authRouter.post('/login', login)
 
 app.use('/auth', authRouter)
 
+app.post('/hello', hello)
 app.post('/add-question', authenticateToken, addQuestions)
 app.get('/list-questions', listQuestions)
 app.get('/question-data/:questionID', authenticateToken, getQuestionData)

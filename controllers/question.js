@@ -1,10 +1,16 @@
 const { prisma } = require('../db')
 
+const hello = async (req, res) => {
+  res.status(200).json({ hello: 'hi there' })
+}
+
 const addQuestions = async (req, res) => {
   const { title, questions, time } = req.body
   if (!title) return res.status(400).json({ title: 'You need to add a title' })
-  if (!questions)
-    return res.status(400).json({ questions: 'You need to add questions' })
+  if (!questions) {
+    res.status(400).json({ questions: 'You need to add questions' })
+    return
+  }
   try {
     const newTitle = await prisma.title.create({
       data: { title, time: Number(time) },
@@ -68,8 +74,10 @@ const getQuestionData = async (req, res) => {
 
 const answerQuestion = async (req, res) => {
   const { questionID } = req.params
-  if (!questionID)
-    return res.status(400).json({ error: 'Bad question request' })
+  if (!questionID) {
+    res.status(400).json({ error: 'Bad question request' })
+    return
+  }
   try {
     const question = await prisma.title.findUnique({
       where: { id: Number(questionID) },
@@ -85,7 +93,8 @@ const answerQuestion = async (req, res) => {
       },
     })
     console.log(question)
-    return res.json({ question })
+    res.json({ question })
+    return
   } catch (error) {
     console.log(error.message)
   }
@@ -177,4 +186,5 @@ module.exports = {
   answerQuestion,
   questionAnswered,
   studentResult,
+  hello,
 }
