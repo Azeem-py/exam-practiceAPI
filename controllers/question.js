@@ -1,9 +1,5 @@
 const { prisma } = require('../db')
 
-const hello = async (req, res) => {
-  res.status(200).json({ hello: 'hi there' })
-}
-
 const addQuestions = async (req, res) => {
   const { title, questions, time } = req.body
   if (!title) return res.status(400).json({ title: 'You need to add a title' })
@@ -65,7 +61,6 @@ const getQuestionData = async (req, res) => {
         Question: { select: { content: true, Option: true } },
       },
     })
-    console.log(question)
     return res.json({ question })
   } catch (error) {
     console.log(error.message)
@@ -92,7 +87,6 @@ const answerQuestion = async (req, res) => {
         },
       },
     })
-    console.log(question)
     res.json({ question })
     return
   } catch (error) {
@@ -175,7 +169,6 @@ const studentResult = async (req, res) => {
     where: { titleId: Number(titleId) },
     select: { name: true, score: true },
   })
-  console.log(results)
   return res.status(200).json({ results })
 }
 
@@ -186,5 +179,4 @@ module.exports = {
   answerQuestion,
   questionAnswered,
   studentResult,
-  hello,
 }
