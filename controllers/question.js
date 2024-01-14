@@ -7,52 +7,49 @@ const addQuestions = async (req, res) => {
     res.status(400).json({ questions: 'You need to add questions' })
     return
   }
-  try {
-    const newTitle = await prisma.title.create({
-      data: { title, time: Number(time) },
-    })
 
-    const questionRecords = questions.map((question) => {
-      const { content, options } = question
-      return {
-        content,
-        questionOwner: { connect: { id: newTitle.id } },
-        options: {
+  const allOptions = questions.map((question) => question['options'])
+  console.log('top options', allOptions)
+  try {
+    const NewTitle = await prisma.title.create({
+      data: {
+        title,
+        time: Number(time),
+        Question: {
           createMany: {
-            data: options.map(({ name, is_correct }) => ({
-              content: name,
-              is_correct,
-            })),
+            data: questions.map((question) => {
+              const { content } = question
+              const newQuestion = {
+                content,
+              }
+              return newQuestion
+            }),
           },
         },
-      }
+      },
+      include: { Question: true, _count: true },
     })
 
-    await prisma.question.createMany({
-      data: questionRecords,
+    const newQuestions = NewTitle['Question']
+    const newAllOptions = []
+    allOptions.forEach((option, index) => {
+      option.forEach((o) => {
+        newAllOptions.push({ ...o, questionId: newQuestions[index]['id'] })
+      })
     })
-    // for (const question of questions) {
-    //   const { content, options } = question
-    //   const newQuestion = await prisma.question.create({
-    //     data: {
-    //       content,
-    //       questionOwner: { connect: { id: newTitle.id } },
-    //     },
-    //   })
-    //   const questionID = newQuestion.id
 
-    //   for (const option of options) {
-    //     const { name, is_correct } = option
-    //     const newOption = await prisma.option.create({
-    //       data: {
-    //         content: name,
-    //         is_correct,
-    //         optionOwner: { connect: { id: questionID } },
-    //       },
-    //     })
-    //     console.log(newOption)
-    //   }
-    // }
+    console.log('new options', newAllOptions)
+
+    const newOptions = await prisma.option.createMany({
+      data: newAllOptions.map((options) => {
+        const { name, is_correct, questionId } = options
+        return { content: name, is_correct, questionId }
+      }),
+    })
+
+    console.log(NewTitle)
+    console.log('newOptions push', newOptions)
+
     res.status(201).json({ message: 'Title added successfully' })
   } catch (error) {
     console.error('Error adding title:', error)
