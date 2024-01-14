@@ -38,17 +38,12 @@ const addQuestions = async (req, res) => {
       })
     })
 
-    console.log('new options', newAllOptions)
-
     const newOptions = await prisma.option.createMany({
       data: newAllOptions.map((options) => {
         const { name, is_correct, questionId } = options
         return { content: name, is_correct, questionId }
       }),
     })
-
-    console.log(NewTitle)
-    console.log('newOptions push', newOptions)
 
     res.status(201).json({ message: 'Title added successfully' })
   } catch (error) {
@@ -135,26 +130,26 @@ const questionAnswered = async (req, res) => {
         title: { connect: { id: Number(title) } },
       },
     })
-    for (let answer of answers) {
-      await prisma.studentAnswer.create({
-        data: {
-          answer: { connect: { id: answer } },
-          student: {
-            connect: { id: newStudent['id'] },
-          },
-        },
-      })
-    }
+    // for (let answer of answers) {
+    //   await prisma.studentAnswer.create({
+    //     data: {
+    //       answer: { connect: { id: answer } },
+    //       student: {
+    //         connect: { id: newStudent['id'] },
+    //       },
+    //     },
+    //   })
+    // }
 
     // might use this one later
-    // const newAnswers = await prisma.studentAnswer.createMany({
-    //   data: answers.map((answer) => {
-    //     return {
-    //       optionId: answer,
-    //       studentId: newStudent['id'],
-    //     }
-    //   }),
-    // })
+    const newAnswers = await prisma.studentAnswer.createMany({
+      data: answers.map((answer) => {
+        return {
+          optionId: answer,
+          studentId: newStudent['id'],
+        }
+      }),
+    })
     // console.log('newAnswers', newAnswers)
 
     const questions = await prisma.title.findUnique({
