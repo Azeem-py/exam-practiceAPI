@@ -11,28 +11,48 @@ const addQuestions = async (req, res) => {
     const newTitle = await prisma.title.create({
       data: { title, time: Number(time) },
     })
-    for (const question of questions) {
-      const { content, options } = question
-      const newQuestion = await prisma.question.create({
-        data: {
-          content,
-          questionOwner: { connect: { id: newTitle.id } },
-        },
-      })
-      const questionID = newQuestion.id
 
-      for (const option of options) {
-        const { name, is_correct } = option
-        const newOption = await prisma.option.create({
-          data: {
-            content: name,
-            is_correct,
-            optionOwner: { connect: { id: questionID } },
+    const questionRecords = questions.map((question) => {
+      const { content, options } = question
+      return {
+        content,
+        questionOwner: { connect: { id: newTitle.id } },
+        options: {
+          createMany: {
+            data: options.map(({ name, is_correct }) => ({
+              content: name,
+              is_correct,
+            })),
           },
-        })
-        console.log(newOption)
+        },
       }
-    }
+    })
+
+    await prisma.question.createMany({
+      data: questionRecords,
+    })
+    // for (const question of questions) {
+    //   const { content, options } = question
+    //   const newQuestion = await prisma.question.create({
+    //     data: {
+    //       content,
+    //       questionOwner: { connect: { id: newTitle.id } },
+    //     },
+    //   })
+    //   const questionID = newQuestion.id
+
+    //   for (const option of options) {
+    //     const { name, is_correct } = option
+    //     const newOption = await prisma.option.create({
+    //       data: {
+    //         content: name,
+    //         is_correct,
+    //         optionOwner: { connect: { id: questionID } },
+    //       },
+    //     })
+    //     console.log(newOption)
+    //   }
+    // }
     res.status(201).json({ message: 'Title added successfully' })
   } catch (error) {
     console.error('Error adding title:', error)
