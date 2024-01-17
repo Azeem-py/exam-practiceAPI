@@ -108,9 +108,10 @@ const answerQuestion = async (req, res) => {
 
 const questionAnswered = async (req, res) => {
   const { name, answers, title } = req.body
-  console.log(title)
   if (!name || !answers)
-    return res.status(500).json({ 'invalid request': 'names answers required' })
+    return res
+      .status(500)
+      .json({ 'invalid request': 'names and answers required' })
 
   try {
     let correctAnswers = 0
@@ -130,18 +131,7 @@ const questionAnswered = async (req, res) => {
         title: { connect: { id: Number(title) } },
       },
     })
-    // for (let answer of answers) {
-    //   await prisma.studentAnswer.create({
-    //     data: {
-    //       answer: { connect: { id: answer } },
-    //       student: {
-    //         connect: { id: newStudent['id'] },
-    //       },
-    //     },
-    //   })
-    // }
 
-    // might use this one later
     const newAnswers = await prisma.studentAnswer.createMany({
       data: answers.map((answer) => {
         return {
@@ -150,7 +140,6 @@ const questionAnswered = async (req, res) => {
         }
       }),
     })
-    // console.log('newAnswers', newAnswers)
 
     const questions = await prisma.title.findUnique({
       where: { id: Number(title) },
@@ -181,7 +170,12 @@ const studentResult = async (req, res) => {
     where: { titleId: Number(titleId) },
     select: { name: true, score: true },
   })
-  return res.status(200).json({ results })
+
+  const questionCount = await prisma.question.count({
+    where: { titleId: Number(titleId) },
+  })
+  console.log(questionCount)
+  return res.status(200).json({ results, questionCount })
 }
 
 module.exports = {
