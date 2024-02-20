@@ -13,19 +13,19 @@ const {
 
 const { authenticateToken } = require('./middlewares/authenticateToken')
 
-// a middleware for validating jwt
-// const authenticateToken = require('./middlewares/authenticateToken')
-
 const app = express()
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://exam-practice-chi.vercel.app'],
+  credentials: true,
 }
 
-// app.use(function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   next()
-// })
-app.use(cors(corsOptions))
+app.use(
+  cors({
+    ...corsOptions,
+    optionsSuccessStatus: 200,
+    methods: 'GET, DELETE, POST, PATCH',
+  })
+)
 app.use(express.json())
 const authRouter = express.Router()
 
